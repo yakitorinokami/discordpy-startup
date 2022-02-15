@@ -1,21 +1,32 @@
-from discord.ext import commands
-from os import getenv
-import traceback
+import discord
+import random
+client = discord.Client()
+# ランダムで送るメッセージの一覧 ※ここに書き足すことでランダムに選ぶ内容を増やせる
+random_contents = [
+    "にゃーん",
+    "わん！",
+    "コケッコッコー",
+]
 
-bot = commands.Bot(command_prefix='/')
-
-
-@bot.event
-async def on_command_error(ctx, error):
-    orig_error = getattr(error, "original", error)
-    error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-    await ctx.send(error_msg)
-
-
-@bot.command()
-async def ping(ctx):
-    await ctx.send('pong')
+@client.event
+async def on_ready():
+    print("on_ready")
+    print(discord.version)
 
 
-token = getenv('DISCORD_BOT_TOKEN')
-bot.run(token)
+@client.event
+async def on_message(message):
+    # 送信者がbotである場合は弾く
+    if message.author.bot:
+        return 
+    # メッセージの本文が 鳴いて だった場合
+    if message.content == "鳴いて":
+        # 送信するメッセージをランダムで決める
+        content = random.choice(random_contents)
+        # メッセージが送られてきたチャンネルに送る
+        await message.channel.send(content)
+    elif message.content == "おはよう":
+        await message.channel.send("おはよう！！")
+
+
+client.run("OTQyNzMxMTU5MjUzNjgwMTI5.Ygowzw.Q0KcZSSSmW8yt7RW6n8K4pgkX24")
